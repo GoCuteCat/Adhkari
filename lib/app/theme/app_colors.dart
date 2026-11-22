@@ -4,15 +4,23 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color primary = Color(0xFF245C48);
-  static const Color primaryDark = Color(0xFF174333);
-  static const Color secondary = Color(0xFFD6B875);
+  static const Color primary = Color(0xFF176B50);
+  static const Color secondary = Color(0xFFC5A45D);
+  static const Color accent = Color(0xFF914945);
+  static const Color background = Color(0xFF26332D);
 
-  static const Color backgroundLight = Color(0xFFF8F7F1);
+  // Dark theme
+  static const Color backgroundDark = background;
+  static const Color surfaceDark = Color(0xFF303F37);
+  static const Color cardDark = Color(0xFF35443C);
+  static const Color borderDark = Color(0xFF46564C);
+
+  static const Color textDark = Color(0xFFF5F2E9);
+  static const Color subtitleDark = Color(0xFFB9C2B9);
+
+  // Light theme
+  static const Color backgroundLight = Color(0xFFF7F5EF);
   static const Color surfaceLight = Color(0xFFFFFFFF);
-  static const Color textLight = Color(0xFF25352D);
-
-  static const Color backgroundDark = Color(0xFF121C18);
-  static const Color surfaceDark = Color(0xFF1D2A24);
-  static const Color textDark = Color(0xFFF3F1E8);
+  static const Color textLight = Color(0xFF26332D);
+  static const Color subtitleLight = Color(0xFF69766E);
 }

@@ -19,6 +19,15 @@ class LightTheme {
         elevation: 0,
         centerTitle: true,
       ),
+      cardTheme: CardThemeData(
+        color: AppColors.surfaceLight,
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFFE6E3DA)),
+        ),
+      ),
     );
   }
 }
