@@ -1,6 +1,9 @@
+
 import 'package:flutter/material.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../data/adhkar_data.dart';
+import '../models/dhikr_model.dart';
 
 class AdhkarCategoryScreen extends StatefulWidget {
   final String categoryTitle;
@@ -15,32 +18,25 @@ class AdhkarCategoryScreen extends StatefulWidget {
       _AdhkarCategoryScreenState();
 }
 
-class _AdhkarCategoryScreenState extends State<AdhkarCategoryScreen> {
-  final List<int> counters = [0, 0, 0];
+class _AdhkarCategoryScreenState
+    extends State<AdhkarCategoryScreen> {
+  late final List<Dhikr> adhkar;
+  late final List<int> counters;
 
-  final List<Map<String, dynamic>> adhkar = [
-    {
-      'dhikr': 'سبحان الله وبحمده',
-      'repeat': 3,
-      'source': 'أذكار المساء',
-    },
-    {
-      'dhikr': 'رضيت بالله رباً وبالإسلام ديناً وبمحمد ﷺ نبياً',
-      'repeat': 3,
-      'source': 'أذكار المساء',
-    },
-    {
-      'dhikr': 'أستغفر الله وأتوب إليه',
-      'repeat': 3,
-      'source': 'ذكر تجريبي للتصميم',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    adhkar = AdhkarData.categories[widget.categoryTitle] ?? [];
+
+    counters = List<int>.filled(adhkar.length, 0);
+  }
 
   int get completedCount {
     int count = 0;
 
     for (int i = 0; i < adhkar.length; i++) {
-      if (counters[i] >= adhkar[i]['repeat']) {
+      if (counters[i] >= adhkar[i].repeat) {
         count++;
       }
     }
@@ -50,7 +46,7 @@ class _AdhkarCategoryScreenState extends State<AdhkarCategoryScreen> {
 
   void incrementCounter(int index) {
     setState(() {
-      if (counters[index] < adhkar[index]['repeat']) {
+      if (counters[index] < adhkar[index].repeat) {
         counters[index]++;
       }
     });
@@ -59,8 +55,7 @@ class _AdhkarCategoryScreenState extends State<AdhkarCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark =
-        theme.brightness == Brightness.dark;
+    final isDark = theme.brightness == Brightness.dark;
 
     final backgroundColor = isDark
         ? AppColors.backgroundDark
@@ -98,128 +93,123 @@ class _AdhkarCategoryScreenState extends State<AdhkarCategoryScreen> {
         elevation: 0,
       ),
 
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          Text(
-            widget.categoryTitle,
-            style: const TextStyle(
-              color: AppColors.primary,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          Text(
-            'اجعل لسانك رطباً بذكر الله',
-            style: TextStyle(
-              color: subtitleColor,
-              fontSize: 14,
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Progress Section
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(
-                20,
+      body: adhkar.isEmpty
+          ? Center(
+              child: Text(
+                'لا توجد أذكار في هذا القسم',
+                style: TextStyle(color: textColor),
               ),
-            ),
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+            )
+          : ListView(
+              padding: const EdgeInsets.all(20),
               children: [
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment
-                          .spaceBetween,
-                  children: [
-                    const Text(
-                      'تقدمك اليوم',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '$completedCount / ${adhkar.length}',
-                      style: const TextStyle(
-                        color:
-                            AppColors.secondary,
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 14),
-
-                ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: adhkar.isEmpty
-                        ? 0
-                        : completedCount /
-                              adhkar.length,
-                    minHeight: 8,
-                    backgroundColor:
-                        Colors.white24,
-                    valueColor:
-                        const AlwaysStoppedAnimation<
-                          Color
-                        >(AppColors.secondary),
+                Text(
+                  widget.categoryTitle,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  'اجعل لسانك رطباً بذكر الله',
+                  style: TextStyle(
+                    color: subtitleColor,
+                    fontSize: 14,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Progress Section
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'تقدمك اليوم',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          Text(
+                            '$completedCount / ${adhkar.length}',
+                            style: const TextStyle(
+                              color: AppColors.secondary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 14),
+
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: LinearProgressIndicator(
+                          value: completedCount / adhkar.length,
+                          minHeight: 8,
+                          backgroundColor: Colors.white24,
+                          valueColor:
+                              const AlwaysStoppedAnimation<Color>(
+                            AppColors.secondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                Text(
+                  'الأذكار (${adhkar.length})',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Dhikr Cards
+                ...List.generate(adhkar.length, (index) {
+                  final item = adhkar[index];
+
+                  return DhikrCard(
+                    dhikr: item.text,
+                    repeat: item.repeat,
+                    source: item.source,
+                    currentCount: counters[index],
+                    cardColor: cardColor,
+                    textColor: textColor,
+                    subtitleColor: subtitleColor,
+                    borderColor: borderColor,
+                    onTap: () => incrementCounter(index),
+                  );
+                }),
               ],
             ),
-          ),
-
-          const SizedBox(height: 28),
-
-          Text(
-            'الأذكار',
-            style: TextStyle(
-              color: textColor,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Dhikr Cards
-          ...List.generate(adhkar.length, (
-            index,
-          ) {
-            final item = adhkar[index];
-
-            return DhikrCard(
-              dhikr: item['dhikr'],
-              repeat: item['repeat'],
-              source: item['source'],
-              currentCount: counters[index],
-              cardColor: cardColor,
-              textColor: textColor,
-              subtitleColor: subtitleColor,
-              borderColor: borderColor,
-              onTap: () =>
-                  incrementCounter(index),
-            );
-          }),
-        ],
-      ),
     );
   }
 }
+
+// ================= DHIKR CARD =================
 
 class DhikrCard extends StatelessWidget {
   final String dhikr;
@@ -259,10 +249,8 @@ class DhikrCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: borderColor),
       ),
-
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Repeat Badge
           Container(
@@ -271,11 +259,8 @@ class DhikrCard extends StatelessWidget {
               vertical: 6,
             ),
             decoration: BoxDecoration(
-              color: AppColors.secondary
-                  .withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(
-                20,
-              ),
+              color: AppColors.secondary.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               '$repeat مرات',
@@ -309,6 +294,7 @@ class DhikrCard extends StatelessWidget {
           Center(
             child: Text(
               source,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: subtitleColor,
                 fontSize: 12,
@@ -322,38 +308,27 @@ class DhikrCard extends StatelessWidget {
           Row(
             children: [
               ElevatedButton.icon(
-                onPressed: isCompleted
-                    ? null
-                    : onTap,
+                onPressed: isCompleted ? null : onTap,
                 icon: Icon(
-                  isCompleted
-                      ? Icons.check
-                      : Icons.add,
+                  isCompleted ? Icons.check : Icons.add,
                   size: 18,
                 ),
                 label: Text(
                   isCompleted ? 'مكتمل' : 'سبّح',
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      AppColors.primary,
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor:
-                      AppColors.primary
-                          .withValues(
-                            alpha: 0.75,
-                          ),
-                  disabledForegroundColor:
-                      Colors.white,
+                      AppColors.primary.withValues(alpha: 0.75),
+                  disabledForegroundColor: Colors.white,
                   elevation: 0,
-                  padding:
-                      const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 11,
-                      ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 11,
+                  ),
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
               ),
@@ -361,16 +336,13 @@ class DhikrCard extends StatelessWidget {
               const Spacer(),
 
               Container(
-                padding:
-                    const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary
-                      .withValues(alpha: 0.12),
-                  borderRadius:
-                      BorderRadius.circular(12),
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '$currentCount / $repeat',
