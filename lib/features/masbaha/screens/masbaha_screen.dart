@@ -8,36 +8,138 @@ import 'masbaha_counter_circle.dart';
 /// Note: this screen is UI only (layout, no logic).
 /// Every place marked TODO(teammate) is functionality that another
 /// teammate will implement.
-class MasbahaScreen extends StatelessWidget {
+/// i've already implemented the UI .
+class MasbahaScreen extends StatefulWidget {
   const MasbahaScreen({super.key});
+
+  @override
+  State<MasbahaScreen> createState() => _MasbahaScreenState();
+}
+
+class _MasbahaScreenState extends State<MasbahaScreen> {
+//  _MasbahaScreenState({super.key});
 
   // ---------------------------------------------------------------------------
   // Hardcoded display-only values (placeholders).
   // They will be replaced with real values once the logic is added.
   // ---------------------------------------------------------------------------
-  static const String _currentDhikr = 'سبحان الله';
-  static const int _count = 0;
-  static const int _target = 33;
-  static const int _rounds = 0;
-  static const int _todayTotal = 154;
+  static String _currentDhikr = 'سبحان الله';
+  static int  _count = 0;
+  static int _target = 33;
+  static  int _rounds = 0;
+  static  int _todayTotal = 154;
   static const List<String> _targets = ['33', '100', '1000', 'حر'];
-  static const int _selectedTargetIndex = 0;
+  static int _selectedTargetIndex = 0;
+  static const List<String> _adhkar = [
+  'سبحان الله',
+  'الحمد لله',
+  'الله أكبر',
+  'لا إله إلا الله',
+  'أستغفر الله',
+  'لا حول ولا قوة إلا بالله',
+  'اللهم صل وسلم على نبينا محمد',
+];
 
   // ---------------------------------------------------------------------------
   // These handlers are intentionally empty
   // ---------------------------------------------------------------------------
 
   // TODO(teammate): increment the counter by 1 when the button is tapped
-  void _onTapCount() {}
+  // Increment counter
+void _onTapCount() {
+  setState(() {
+    _count++;
+    _todayTotal++;
+
+    // Check if target is completed
+    if (_target > 0 && _count >= _target) {
+      _rounds++;
+      _count = 0;
+    }
+  });
+}
 
   // TODO(teammate): reset the counter
-  void _onReset() {}
+  void _onReset() {
+  setState(() {
+    _count = 0;
+    _rounds = 0;
+  });
+}
+
 
   // TODO(teammate): select the current dhikr from a list
-  void _onSelectDhikr() {}
+  void _onSelectDhikr() {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'اختار الذكر',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+
+            ..._adhkar.map((dhikr) {
+              return ListTile(
+                title: Text(
+                  dhikr,
+                  textAlign: TextAlign.center,
+                ),
+                onTap: () {
+                  setState(() {
+                    _currentDhikr = dhikr;
+                    _count = 0;
+                    _rounds = 0;
+                  });
+
+                  Navigator.pop(context);
+                },
+              );
+            }),
+          ],
+        ),
+      );
+    },
+  );
+}
 
   // TODO(teammate): change the round target (33 / 100 / 1000 / free)
-  void _onSelectTarget(int index) {}
+ void _onSelectTarget(int index) {
+  setState(() {
+    _selectedTargetIndex = index;
+
+    switch (index) {
+      case 0:
+        _target = 33;
+        break;
+
+      case 1:
+        _target = 100;
+        break;
+
+      case 2:
+        _target = 1000;
+        break;
+
+      case 3:
+        _target = 0; // Free counting
+        break;
+    }
+
+    _count = 0;
+    _rounds = 0;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -85,9 +187,9 @@ class MasbahaScreen extends StatelessWidget {
                         style: TextStyle(color: subtitleColor, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         '$_todayTotal',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
@@ -123,7 +225,7 @@ class MasbahaScreen extends StatelessWidget {
                         color: AppColors.primary.withValues(alpha: 0.10),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Expanded(
                             child: Text(
@@ -187,7 +289,7 @@ class MasbahaScreen extends StatelessWidget {
             const SizedBox(height: 28),
 
             // ----- Circular counter -----
-            const Center(
+            Center(
               child: MasbahaCounterCircle(
                 dhikr: _currentDhikr,
                 count: _count,
